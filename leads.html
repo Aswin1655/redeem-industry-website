@@ -1,0 +1,19 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Enquiries | Redeem Industry</title><link rel="stylesheet" href="style.css"></head><body>
+<header class="site-header"><a class="brand" href="index.html">Redeem <span>Industry</span></a><nav><a href="index.html">Back to website</a></nav></header>
+<main class="section"><h1>Customer enquiries</h1><p class="lead">Requests submitted from the website in this browser.</p>
+<p><button class="btn small" id="csv">Export CSV</button> <button class="btn small ghost" id="clear">Clear all</button></p>
+<div class="scroll"><table id="t"><thead><tr><th>Date</th><th>Name</th><th>Email</th><th>Phone</th><th>Product</th><th>Qty</th><th>Notes</th></tr></thead><tbody></tbody></table></div>
+<p id="empty" class="lead"></p></main>
+<script>
+const keys=["date","name","email","phone","product","qty","notes"];
+const get=()=>{try{return JSON.parse(localStorage.getItem("redeem_leads")||"[]")}catch(e){return[]}};
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function draw(){const l=get();document.querySelector("#t tbody").innerHTML=l.map(r=>"<tr>"+keys.map(k=>"<td>"+esc(r[k])+"</td>").join("")+"</tr>").join("");
+document.getElementById("empty").textContent=l.length?"":"No enquiries yet. Submit one from the website to see it here.";}
+document.getElementById("csv").onclick=()=>{const q=v=>'"'+String(v??"").replace(/"/g,'""')+'"';
+const csv=[keys.join(",")].concat(get().map(r=>keys.map(k=>q(r[k])).join(","))).join("\n");
+const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="enquiries.csv";a.click();};
+document.getElementById("clear").onclick=()=>{if(confirm("Delete all saved enquiries?")){localStorage.removeItem("redeem_leads");draw();}};
+draw();
+</script></body></html>
